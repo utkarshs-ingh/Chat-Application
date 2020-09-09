@@ -108,6 +108,7 @@ void send_group_message(char *s, int uid) {
 
 void send_private_message(char *s, int uid, char *reciever) {
 	pthread_mutex_lock(&clients_mutex);
+	str_trim(reciever, strlen(reciever));
 		int check = 0, sender = 0;
 		for(int i = 0; i < MAX_CLIENTS; i++) {
 			if(clients[i]) {
