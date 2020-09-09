@@ -176,11 +176,11 @@ void *handle_client(void *arg) {
 	 	if(recieve > 0) {
 	 		if(strlen(buffer) > 0) { 
 	 			int i = LengthofString(buffer);
-    			if(i < strlen(buffer)) {
+    			if(i < strlen(buffer) && buffer[i-1] == ' ') {
         			i = i + 1;
         			int j = 0;
         			char reciever[32];
-        			while(buffer[i] != ' ') {
+        			while(buffer[i] != ' ' && i <= strlen(buffer)) {
             			reciever[j] = buffer[i];
             			j++;
             			i++;
