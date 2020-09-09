@@ -46,7 +46,8 @@ void str_trim(char* arr, int length) {
 }
 
 
-int LengthofString(int i, char *buffer) {  
+int LengthofString(char *buffer) {  
+    int i;
     for(i= 0; i< strlen(buffer); i++){
         if(buffer[i] == '@') break;
     }
@@ -122,7 +123,7 @@ void send_private_message(char *s, int uid, char *reciever) {
 		}
 
 		if(check != 1) { //user not found
-			char buff[32];
+			char buff[100];
 			sprintf(buff, "ERROR: seems like %s is not here!!!\n", reciever);	
 			write(clients[sender]->sockfd, buff, strlen(buff));			    
 		}
@@ -174,7 +175,7 @@ void *handle_client(void *arg) {
 		int recieve = recv(cli->sockfd, buffer, BUFFER_SIZE, 0);
 	 	if(recieve > 0) {
 	 		if(strlen(buffer) > 0) { 
-	 			int i = LengthofString(i, buffer);
+	 			int i = LengthofString(buffer);
     			if(i < strlen(buffer)) {
         			i = i + 1;
         			int j = 0;
