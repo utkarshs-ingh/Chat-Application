@@ -19,20 +19,15 @@ char *ip = "127.0.0.1";
 
 
 void catch_ctrl_c_and_exit(int sig) {
-
 	flag = 1;
-	
 }
 
 void str_overwrite_stdout() {
-
 	printf("%s", ">>");
 	fflush(stdout);
-
 }
 
 void str_trim_lf(char* arr, int length) {
-
 	int i;
 	for (i = 0; i < length; i++) { 
 		if (arr[i] == '\n') {
@@ -63,7 +58,7 @@ int connect_to_Server(int port){
 	server_addr.sin_port = htons(port);
 
 
-  // Connect to Server
+  	// Connect to Server
 	int err = connect(sockfd, (struct sockaddr *)&server_addr, sizeof(server_addr));
 	if (err == -1) {
 			printf("CONNECTION ERROR!!!\n");
@@ -120,5 +115,4 @@ void recv_msg_handler() {
 		
 		memset(message, 0, sizeof(message));
   	}
-
 }
