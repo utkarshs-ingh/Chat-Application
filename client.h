@@ -15,13 +15,19 @@
 volatile sig_atomic_t flag = 0;
 int sockfd = 0;
 char name[32];
+char *ip = "127.0.0.1";
+
+
+void catch_ctrl_c_and_exit(int sig) {
+    flag = 1;
+}
 
 void str_overwrite_stdout() {
   printf("%s", ">>");
   fflush(stdout);
 }
 
-void str_trim_lf (char* arr, int length) {
+void str_trim_lf(char* arr, int length) {
   int i;
   for (i = 0; i < length; i++) { 
     if (arr[i] == '\n') {
@@ -31,10 +37,35 @@ void str_trim_lf (char* arr, int length) {
   }
 }
 
+int connect_to_Server(int port){
+
+	struct sockaddr_in server_addr;
+
+	/* Socket settings */
+	sockfd = socket(AF_INET, SOCK_STREAM, 0);
+	server_addr.sin_family = AF_INET;
+	server_addr.sin_addr.s_addr = inet_addr(ip);
+	server_addr.sin_port = htons(port);
 
 
-void catch_ctrl_c_and_exit(int sig) {
-    flag = 1;
+  // Connect to Server
+	int err = connect(sockfd, (struct sockaddr *)&server_addr, sizeof(server_addr));
+	if (err == -1) {
+			printf("ERROR: connect\n");
+			return EXIT_FAILURE;
+	}
+
+	// Send name to the server
+	send(sockfd, name, 32, 0);
+
+}
+
+void printWelcome(){
+	printf("--------------- INSTRUCTIONS: ---------------\n");
+	printf("1. PRIVATE MESSAGE CAN BE SENT USING '@user message' FORMAT. \n");
+	printf("2. BY DEFAULT ALL THE MESSAGES ARE SENT TO THE COMMON GROUP CHAT. \n");
+	printf("3. ALL PRESENT MEMEBERS OF THE COMMON ROOM CAN BE FOUND USING '#who_all' message. \n");
+	printf("--------------- WELCOME: %s ---------------\n", name);
 }
 
 void send_msg_handler() {
