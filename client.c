@@ -23,9 +23,6 @@ int main(int argc, char **argv){
 	// Establish connection with Server
 	connect_to_Server(port);
 
-	// Printing User manual and Welcome message
-	printWelcome();
-
 	// calling send message handler
 	pthread_t send_msg_thread;
 	if(pthread_create(&send_msg_thread, NULL, (void *) send_msg_handler, NULL) != 0){
@@ -39,7 +36,8 @@ int main(int argc, char **argv){
 		printf("ERROR: pthread\n");
 		return EXIT_FAILURE;
 	}
-
+	
+	// Closing the Connection
 	while (1){
 		if(flag){
 			printf("--------------- GOOD BYE : %s ---------------\n", name);

@@ -19,22 +19,37 @@ char *ip = "127.0.0.1";
 
 
 void catch_ctrl_c_and_exit(int sig) {
-    flag = 1;
+
+	flag = 1;
+	
 }
 
 void str_overwrite_stdout() {
-  printf("%s", ">>");
-  fflush(stdout);
+
+	printf("%s", ">>");
+	fflush(stdout);
+
 }
 
 void str_trim_lf(char* arr, int length) {
-  int i;
-  for (i = 0; i < length; i++) { 
-    if (arr[i] == '\n') {
-      arr[i] = '\0';
-      break;
-    }
-  }
+
+	int i;
+	for (i = 0; i < length; i++) { 
+		if (arr[i] == '\n') {
+			arr[i] = '\0';
+			break;
+		}
+	}
+}
+
+void printWelcome(){
+
+	printf("----------------------------- INSTRUCTIONS -----------------------------\n");
+	printf("1. PRIVATE MESSAGE CAN BE SENT USING '@user message' FORMAT. \n");
+	printf("2. BY DEFAULT ALL THE MESSAGES ARE SENT TO THE COMMON GROUP CHAT. \n");
+	printf("3. ALL PRESENT MEMEBERS OF THE COMMON ROOM CAN BE FOUND USING '#who_all' message. \n");
+	printf("\n----------------------------- WELCOME: %s -----------------------------\n", name);
+
 }
 
 int connect_to_Server(int port){
@@ -51,8 +66,12 @@ int connect_to_Server(int port){
   // Connect to Server
 	int err = connect(sockfd, (struct sockaddr *)&server_addr, sizeof(server_addr));
 	if (err == -1) {
-			printf("ERROR: connect\n");
+			printf("CONNECTION ERROR!!!\n");
 			return EXIT_FAILURE;
+	}
+	else {
+		// Printing User manual and Welcome message
+		printWelcome();
 	}
 
 	// Send name to the server
@@ -60,15 +79,9 @@ int connect_to_Server(int port){
 
 }
 
-void printWelcome(){
-	printf("--------------- INSTRUCTIONS: ---------------\n");
-	printf("1. PRIVATE MESSAGE CAN BE SENT USING '@user message' FORMAT. \n");
-	printf("2. BY DEFAULT ALL THE MESSAGES ARE SENT TO THE COMMON GROUP CHAT. \n");
-	printf("3. ALL PRESENT MEMEBERS OF THE COMMON ROOM CAN BE FOUND USING '#who_all' message. \n");
-	printf("--------------- WELCOME: %s ---------------\n", name);
-}
 
 void send_msg_handler() {
+
 	char message[LENGTH] = {};
 	char buffer[LENGTH + 32] = {};
 
@@ -89,11 +102,13 @@ void send_msg_handler() {
 		bzero(buffer, LENGTH + 32);
 	}
 	catch_ctrl_c_and_exit(2);
+
 }
 
 void recv_msg_handler() {
+
 	char message[LENGTH] = {};
-  while (1) {
+  	while (1) {
 		int receive = recv(sockfd, message, LENGTH, 0);
 		if (receive > 0) {
 			printf("%s", message);
@@ -105,4 +120,5 @@ void recv_msg_handler() {
 		
 		memset(message, 0, sizeof(message));
   	}
+
 }
