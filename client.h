@@ -110,9 +110,8 @@ void recv_msg_handler() {
 			str_overwrite_stdout();
 		} 
 		else if (receive == 0) {
-				break;
+			break;
 		} 
-		
 		memset(message, 0, sizeof(message));
   	}
 }
