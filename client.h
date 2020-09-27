@@ -21,7 +21,7 @@ char *ip = "127.0.0.1";
 void catch_ctrl_c_and_exit(int sig) {
 
 	flag = 1;
-	
+
 }
 
 void str_overwrite_stdout() {
