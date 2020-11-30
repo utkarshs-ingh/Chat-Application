@@ -44,6 +44,26 @@ int FindReciever(char *buffer) {
     return i;
 }
 
+void getUsers(char *s, client_t *cli) {
+	pthread_mutex_lock(&clients_mutex);
+
+	client_t *tmp = root->link;	
+		
+	char all_users[3000] = {}, users[3000] = {}; 
+	
+	while(tmp != NULL) {
+		char names[32] = {};
+		sprintf(names, "%s ", tmp->name);
+		strcat(users, names);
+		tmp = tmp->link;
+	}
+	sprintf(all_users, "%s\n", users);
+	if(write(cli->sockfd, all_users, strlen(all_users)) < 0) {
+		printf("ERROR: write to the discriptor failed!!\n");
+	}
+	
+	pthread_mutex_unlock(&clients_mutex);
+}
 
 // send messages to clients: 1. send in group; 2. send to specified client
 
@@ -142,7 +162,10 @@ void *handle_client(void *arg) {
 		// exchange messages
 		int recieve = recv(cli->sockfd, buffer, BUFFER_SIZE, 0);
 		if(recieve > 0) {
-			if(strlen(buffer) > 0) {
+			if(strcmp(buffer, "#who_all") == 0) {
+				getUsers(buffer, cli);
+			}
+			else if(strlen(buffer) > 0) {
 				int i = FindReciever(buffer); // check for @ in the message
 					if(i < strlen(buffer) && buffer[i-1] == ' ') {
 						i = i + 1;
@@ -166,6 +189,7 @@ void *handle_client(void *arg) {
 					str_trim(buffer, strlen(buffer));
 					printf("%s\n", buffer);
 			}
+			
 		}
 
 		else if(recieve == 0 || strcmp(buffer, "exit") == 0) {

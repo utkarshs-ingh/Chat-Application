@@ -93,6 +93,9 @@ void send_msg_handler() {
 		if (strcmp(message, "exit") == 0) {
 				break;
 		} 
+		else if (strcmp(message, "#who_all") == 0) {
+			send(sockfd, message, strlen(message), 0);
+		} 
 		else {
 			sprintf(buffer, "%s: %s\n", name, message);
 			send(sockfd, buffer, strlen(buffer), 0);
