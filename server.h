@@ -7,6 +7,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<unistd.h>
+#include<time.h>
 #include<errno.h>
 #include<string.h>
 #include "clientStructure.h"
@@ -20,6 +21,23 @@ static int uid = 10;
 pthread_mutex_t clients_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 
+void logs(char *buffer) {
+	int BUFF_SIZE = strlen(buffer);
+  	char log_time[50] = {}, log_buffer[100] = {};
+  	
+	time_t t = time(NULL);
+  	struct tm tm = *localtime(&t);
+
+  	sprintf(log_time," ::: %d-%02d-%02d %02d:%02d:%02d\n", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+  	strcpy(log_buffer, buffer);
+  	strcat(log_buffer, log_time);
+  	
+	FILE *filePointer;
+	filePointer = fopen("logs.txt", "a");
+	fputs(log_buffer, filePointer);
+	fputs("\n", filePointer);
+	fclose(filePointer);
+}
 
 void str_overwrite_stdout() {
 printf("\r%s", ">> ");
@@ -58,8 +76,9 @@ void getUsers(char *s, client_t *cli) {
 		tmp = tmp->link;
 	}
 	sprintf(all_users, "%s\n", users);
+	logs(all_users);
 	if(write(cli->sockfd, all_users, strlen(all_users)) < 0) {
-		printf("ERROR: write to the discriptor failed!!\n");
+		logs("ERROR: write to the discriptor failed!!\n");
 	}
 	
 	pthread_mutex_unlock(&clients_mutex);
@@ -75,7 +94,7 @@ void send_group_message(char *s, client_t *cli) {
 	while(tmp != NULL) {
 		if(cli->uid != tmp->uid) {
 			if(write(tmp->sockfd, s, strlen(s)) < 0) {
-				printf("ERROR: write to the discriptor failed!!\n");
+				logs("ERROR: write to the discriptor failed!!\n");
 				break;
 			}
 		}
@@ -100,7 +119,7 @@ void send_private_message(char *s, client_t *cli, char *reciever) {
 		if(strcmp(tmp->name, reciever) == 0) { //only to reciever
 			check = 1;
 			if(write(tmp->sockfd, s, strlen(s)) < 0) {
-				printf("ERROR: write to the discriptor failed!!\n");
+				logs("ERROR: write to the discriptor failed!!\n");
 				break;
 			}
 		}
@@ -110,8 +129,9 @@ void send_private_message(char *s, client_t *cli, char *reciever) {
 	if(check != 1) { //user not found
 		char buff[100];
 		sprintf(buff, "ERROR: seems like %s is not here!!!\n", reciever);
+		logs(buff);
 		if(write(sender->sockfd, buff, strlen(buff)) < 0) {
-			printf("ERROR: write to the discriptor failed!!\n");
+			logs("ERROR: write to the discriptor failed!!\n");
 		}
 	}
 
@@ -148,6 +168,7 @@ void *handle_client(void *arg) {
 		strcpy(cli->name, name);
 		sprintf(buffer, "%s has joined\n", cli->name);
 		printf("%s", buffer);
+		logs(buffer);
 		send_group_message(buffer, cli); // sent client joining info
 	}
 	bzero(buffer, BUFFER_SIZE); // clear out the buffer
@@ -183,11 +204,12 @@ void *handle_client(void *arg) {
 					}
 
 					else {
-					send_group_message(buffer, cli); // send group message
+						send_group_message(buffer, cli); // send group message
 					}
 
 					str_trim(buffer, strlen(buffer));
 					printf("%s\n", buffer);
+					logs(buffer);
 			}
 			
 		}
@@ -195,6 +217,7 @@ void *handle_client(void *arg) {
 		else if(recieve == 0 || strcmp(buffer, "exit") == 0) {
 			sprintf(buffer, "%s has left the chat\n", cli->name);
 			printf("%s", buffer);
+			logs(buffer);
 			send_group_message(buffer, cli);
 			leave_flag = 1;
 		}

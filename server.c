@@ -50,7 +50,7 @@ int main(int argc, char **argv){
 	}
 
 	printf("--------------- CHAT SERVER is UP & RUNNING ---------------\n");
-
+	logs("Server started at => ");
 	// root node intialization
 	root = newNode(client_info, connectfd, 10);
 	now = root;
