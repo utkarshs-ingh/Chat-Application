@@ -40,7 +40,7 @@ int main(int argc, char **argv){
 	// Closing the Connection
 	while (1){
 		if(flag){
-			printf("--------------- GOOD BYE : %s ---------------\n", name);
+			printf("----------------------------- GOOD BYE: %s -----------------------------\n", name);
 			break;
 		}
 	}
